@@ -3,7 +3,7 @@
 # Written by :
 # Amir Lavi, id 3002020595 & Eliran Yehezkel, id 021682042
 # ========================================================
-# Find 3 scripts in the bottom of the page, change run_test_or_train accordingly to your will
+# Find 3 scripts in the bottom of the page, remove # (comment) accordingly to your will
 #
 
 import pandas as pd
@@ -127,7 +127,7 @@ def write_dictionary_pkl(file_name):
     pkl_file.close()
 
 
-def run_test_or_train():
+def run_train():
 
     train_csv = pd.read_csv("./Train.csv")['FullDescription']
 
@@ -150,8 +150,37 @@ def run_test_or_train():
     write_dictionary_pkl('train.pkl')
 
     final_time = (time.time() - delta) / len(train_csv)
+    print('\n\n\nRun Train.csv')
     print('Final Time: ' + str(final_time))
     print('Jaccard Average Similarity: ' + str(calc_jaccard_similarity(train_csv)))
+    print('Jaccard number of items with more then 0.8 score: ' + str(len(jaccard_compatibility)))
+
+
+def run_test():
+
+    test_csv = pd.read_csv("./Test.csv")['FullDescription']
+
+    global dictionary
+    global jaccard_compatibility
+    jaccard_compatibility = []
+
+    delta = time.time()
+    i = 0
+    for desc_row in test_csv:
+        # insert to dictionary
+        signature = create_signature(desc_row)
+
+        # find signature bucket
+        sig_string = create_string_from_signature(signature[:32])
+        find_signature_bucket(sig_string, i)
+        i += 1
+
+    write_dictionary_pkl('test.pkl')
+
+    final_time = (time.time() - delta) / len(test_csv)
+    print('\n\n\nRun Test.csv')
+    print('Final Time: ' + str(final_time))
+    print('Jaccard Average Similarity: ' + str(calc_jaccard_similarity(test_csv)))
     print('Jaccard number of items with more then 0.8 score: ' + str(len(jaccard_compatibility)))
 
 
@@ -170,7 +199,7 @@ def read_test():
     read_dictionary_pkl('test.pkl')
     test_csv = pd.read_csv("./Test.csv")['FullDescription']
 
-    print('Read test.pkl')
+    print('\n\n\nRead test.pkl')
     print('Jaccard Average Similarity: ' + str(calc_jaccard_similarity(test_csv)))
     print('Jaccard number of items with more then 0.8 score: ' + str(len(jaccard_compatibility)))
 
@@ -183,13 +212,13 @@ def read_train():
     read_dictionary_pkl('train.pkl')
     train_csv = pd.read_csv("./Train.csv")['FullDescription']
 
-    print('Read train.pkl')
+    print('\n\n\nRead train.pkl')
     print('Jaccard Average Similarity: ' + str(calc_jaccard_similarity(train_csv)))
     print('Jaccard number of items with more then 0.8 score: ' + str(len(jaccard_compatibility)))
 
-# run_test_or_train()
+# run_train()
+# read_train()
 
-read_test()
-
-read_train()
+# run_test()
+# read_test()
 
